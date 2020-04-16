@@ -7,29 +7,31 @@ integer, external :: nf_inq_varnatts
 
 ! ---------------------------------------------------------------------------------------- 
 ! ---------------------------------------------------------------------------------------- 
-type :: nfhl_var
-   integer :: id
-   integer :: xtype
-   character(len=:), allocatable :: name
-   integer, allocatable, dimension(:) :: shape
-   integer, allocatable, dimension(:) :: dimids
-end type nfhl_var
-
-! ---------------------------------------------------------------------------------------- 
-! ---------------------------------------------------------------------------------------- 
 type :: nfhl_dim
-   integer :: id
-   integer :: size
+   integer :: id=0
+   integer :: size=0
    character(len=:), allocatable :: name
 end type nfhl_dim
 
 ! ---------------------------------------------------------------------------------------- 
 ! ---------------------------------------------------------------------------------------- 
 type :: nfhl_att
-   integer :: num
+   integer :: num=0
    integer :: xtype
    character(len=:), allocatable :: name
 end type nfhl_att
+
+! ----------------------------------------------------------------------------------------
+! ----------------------------------------------------------------------------------------
+type :: nfhl_var
+   integer :: id=0
+   integer :: natts=0
+   integer :: xtype
+   character(len=:), allocatable :: name
+   integer, allocatable, dimension(:) :: shape
+   integer, allocatable, dimension(:) :: dimids
+   type(nfhl_att), allocatable, dimension(:) :: attributes
+end type nfhl_var
 
 ! ---------------------------------------------------------------------------------------- 
 ! ---------------------------------------------------------------------------------------- 
@@ -59,7 +61,7 @@ subroutine open(ds,path,mode)
    integer, intent(in), optional :: mode
    
    character(len=NF90_MAX_NAME) :: ctemp
-   integer :: n,n1,n2,n3
+   integer :: n,n1,n2,n3,nn
    integer :: iret
    integer :: ndims
    integer :: nvars
@@ -99,6 +101,15 @@ subroutine open(ds,path,mode)
       do n1=1,size(ds%variables(n)%dimids)
          ds%variables(n)%shape(n1)=ds%dimensions(ds%variables(n)%dimids(n1))%size
       end do
+      ! Get attributes for a NetCDF variable.
+      iret=nf_inq_varnatts(ds%id,ds%variables(n)%id,ds%variables(n)%natts)
+      allocate(ds%variables(n)%attributes(ds%variables(n)%natts))
+      do nn=1,ds%variables(n)%natts
+         iret=nf90_inq_attname(ds%id,ds%variables(n)%id,nn,ctemp)
+         ds%variables(n)%attributes(nn)%name=trim(ctemp)
+         iret=nf90_inquire_attribute(ds%id,ds%variables(n)%id,ds%variables(n)%attributes(nn)%name,&
+                                     ds%variables(n)%attributes(nn)%xtype)
+      end do
    end do
 
    return
@@ -135,6 +146,9 @@ subroutine print(ds)
       end do
       write(6,fmt='(A)',advance="no")")"
       write(6,fmt='(A,A)',advance="yes")": Type = ",get_var_type(ds%variables(n)%xtype)
+      do nn=1,ds%variables(n)%natts
+         write(6,fmt='(15XA,A)')ds%variables(n)%attributes(nn)%name,": "
+      end do
    end do
 end subroutine print
 
