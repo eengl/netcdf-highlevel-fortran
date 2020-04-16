@@ -7,45 +7,45 @@ integer, external :: nf_inq_varnatts
 
 ! ---------------------------------------------------------------------------------------- 
 ! ---------------------------------------------------------------------------------------- 
-type :: variable
+type :: nfhl_var
    integer :: id
    integer :: xtype
    character(len=:), allocatable :: name
    integer, allocatable, dimension(:) :: shape
    integer, allocatable, dimension(:) :: dimids
-end type variable
+end type nfhl_var
 
 ! ---------------------------------------------------------------------------------------- 
 ! ---------------------------------------------------------------------------------------- 
-type :: dimension
+type :: nfhl_dim
    integer :: id
    integer :: size
    character(len=:), allocatable :: name
-end type dimension
+end type nfhl_dim
 
 ! ---------------------------------------------------------------------------------------- 
 ! ---------------------------------------------------------------------------------------- 
-type :: attribute
+type :: nfhl_att
    integer :: num
    integer :: xtype
    character(len=:), allocatable :: name
-end type attribute
+end type nfhl_att
 
 ! ---------------------------------------------------------------------------------------- 
 ! ---------------------------------------------------------------------------------------- 
-type :: dataset
+type :: nfhl_dataset
    character(len=:), allocatable :: name
    integer :: id=0
    integer :: natts=0
    integer :: ndims=0
    integer :: nvars=0
-   type(attribute), allocatable, dimension(:) :: attributes
-   type(dimension), allocatable, dimension(:) :: dimensions
-   type(variable), allocatable, dimension(:) :: variables
+   type(nfhl_att), allocatable, dimension(:) :: attributes
+   type(nfhl_dim), allocatable, dimension(:) :: dimensions
+   type(nfhl_var), allocatable, dimension(:) :: variables
    contains
    procedure :: open
    procedure :: print
-end type dataset
+end type nfhl_dataset
 
 contains
 
@@ -53,7 +53,7 @@ contains
 ! ---------------------------------------------------------------------------------------- 
 subroutine open(ds,path,mode)
    implicit none
-   class(dataset) :: ds
+   class(nfhl_dataset) :: ds
    character(len=*), intent(in) :: path
    integer, intent(in), optional :: mode
    
@@ -107,7 +107,7 @@ end subroutine open
 ! ---------------------------------------------------------------------------------------- 
 subroutine print(ds)
    implicit none
-   class(dataset) :: ds
+   class(nfhl_dataset) :: ds
 
    integer :: n,nn
 
