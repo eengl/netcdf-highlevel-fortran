@@ -145,7 +145,7 @@ subroutine print(ds)
          write(6,fmt='(I0.1,A2)',advance="no")ds%variables(n)%shape(nn),", "
       end do
       write(6,fmt='(A)',advance="no")")"
-      write(6,fmt='(A,A)',advance="yes")": Type = ",get_var_type(ds%variables(n)%xtype)
+      write(6,fmt='(A,A)',advance="yes")": Type = ",get_nf90_type(ds%variables(n)%xtype)
       do nn=1,ds%variables(n)%natts
          write(6,fmt='(15XA,A)')ds%variables(n)%attributes(nn)%name,": "
       end do
@@ -164,7 +164,7 @@ end subroutine close
 
 ! ---------------------------------------------------------------------------------------- 
 ! ---------------------------------------------------------------------------------------- 
-function get_var_type(xtype) result(vartype)
+function get_nf90_type(xtype) result(vartype)
    implicit none
    integer, intent(in) :: xtype
    character(len=:), allocatable :: vartype
@@ -183,7 +183,7 @@ function get_var_type(xtype) result(vartype)
    ctype(11)="NF90_UINT64"
    ctype(12)="NF90_STRING"
    vartype=trim(ctype(xtype))
-end function get_var_type
+end function get_nf90_type
 
 ! ---------------------------------------------------------------------------------------- 
 ! END OF MODULE
