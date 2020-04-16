@@ -116,7 +116,7 @@ subroutine print(ds)
    write(6,fmt='(5XA,I0.1)')"Id = ",ds%id
 
    write(6,fmt='(/5XA)')"Global Attributes:"
-   do n=1,ds%ndims
+   do n=1,ds%natts
       write(6,fmt='(10XA,A)')ds%attributes(n)%name,": "
    end do
 
