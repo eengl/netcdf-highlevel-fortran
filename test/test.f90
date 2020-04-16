@@ -11,4 +11,6 @@ call dstest%open(trim(cfile),NF90_NOWRITE)
 
 call dstest%print
 
+call dstest%close
+
 end program test

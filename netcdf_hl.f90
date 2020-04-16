@@ -43,6 +43,7 @@ type :: nfhl_dataset
    type(nfhl_dim), allocatable, dimension(:) :: dimensions
    type(nfhl_var), allocatable, dimension(:) :: variables
    contains
+   procedure :: close
    procedure :: open
    procedure :: print
 end type nfhl_dataset
@@ -136,6 +137,16 @@ subroutine print(ds)
       write(6,fmt='(A,A)',advance="yes")": Type = ",get_var_type(ds%variables(n)%xtype)
    end do
 end subroutine print
+
+! ---------------------------------------------------------------------------------------- 
+! ---------------------------------------------------------------------------------------- 
+subroutine close(ds)
+   implicit none
+   class(nfhl_dataset) :: ds
+   integer :: iret
+   iret=0
+   iret=nf90_close(ds%id)
+end subroutine close
 
 ! ---------------------------------------------------------------------------------------- 
 ! ---------------------------------------------------------------------------------------- 
